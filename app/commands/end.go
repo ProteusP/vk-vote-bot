@@ -17,16 +17,14 @@ func EndVote(client *model.Client4, conn *tarantool.Connection, userID, channelI
 	}
 
 	voteID := args[0]
-	var vote tarantooldb.Vote
-
-	vote.Status = "ended"
+	log.Printf("[DEBUG] Айди из запроса: %s", voteID)
 
 	_, err := conn.Update("votes", "primary", []any{voteID},
 		[]tarantool.Op{
 			tarantool.Op{
 				Field: StatusIndex,
 				Op:    "=",
-				Arg:   vote.Status,
+				Arg:   "ended",
 			},
 		},
 	)
@@ -37,6 +35,28 @@ func EndVote(client *model.Client4, conn *tarantool.Connection, userID, channelI
 		return
 	}
 
-	//TODO: FORMAT
+	resp, err := conn.Select("votes", "primary", 0, 1, tarantool.IterEq, []interface{}{voteID})
+
+	switch {
+	case err != nil:
+		log.Printf("[ERROR] Ошибка поиска голосования: %v", err)
+		sendError(client, channelID, "Ошибка сервера")
+		return
+	case len(resp.Data) == 0:
+		sendError(client, channelID, "Голосование не найдено")
+		return
+
+	}
+
+	log.Printf("[DEBUG] Структура ответа: %v", resp.Data[0])
+
+	var vote tarantooldb.Vote
+	err = vote.LoadFromResponse(resp.Data)
+	if err != nil {
+		log.Printf("[ERROR] Ошибка загрузки голосования: %v", err)
+		sendError(client, channelID, "Ошибка сервера")
+		return
+	}
 	sendSuccess(client, channelID, "✅ Голосование завершено!")
+	SendMessage(client, channelID, vote.Results())
 }

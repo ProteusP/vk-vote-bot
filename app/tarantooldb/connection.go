@@ -17,7 +17,7 @@ func Connect(addr string) (*tarantool.Connection, error) {
 	})
 
 	if err != nil {
-		log.Fatalf("Ошибка подключения к Tarantool: %v", err)
+		log.Fatalf("[ERROR] Ошибка подключения к Tarantool: %v", err)
 	}
 
 	return conn, err

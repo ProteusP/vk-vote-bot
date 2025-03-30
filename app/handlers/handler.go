@@ -36,14 +36,14 @@ func (h *Handler) Start() {
 }
 
 func (h *Handler) handleWebhook(w http.ResponseWriter, r *http.Request) {
-	log.Print("[INFO] Пришел запрос на webhook")
+	log.Print("[DEBUG] Пришел запрос")
 	token := r.URL.Query().Get("token")
 	if token != h.webhookToken {
 		log.Printf("Неверный токен вебхука: %s", token)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	log.Println("Токен верный, обработка запроса")
+	log.Println("[DEBUG] Токен верный, обработка запроса")
 
 	var payload model.OutgoingWebhookPayload
 
@@ -52,18 +52,19 @@ func (h *Handler) handleWebhook(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	log.Println("Запрос успешно декодирован")
-	log.Println("Message:", payload.Text)
+	log.Println("[DEBUG] Запрос успешно декодирован")
+	log.Println("[DEBUG] Message:", payload.Text)
 	if !strings.HasPrefix(payload.Text, "vote") {
-		log.Println("Команда vote не обнаружена")
+		log.Println("[DEBUG] Команда vote не обнаружена")
 		return
 	}
-	log.Println("Команда vote обнаружена")
+
+	log.Println("[DEBUG] Команда vote обнаружена")
 	command := strings.TrimSpace(strings.TrimPrefix(payload.Text, "vote"))
-	log.Printf("Обработка команды: UserID=%s, Command=%s", payload.UserId, command)
+	log.Printf("[DEBUG] Обработка команды: UserID=%s, Command=%s", payload.UserId, command)
 
 	h.handleCommand(payload.UserId, payload.ChannelId, command)
-	log.Println("Обработка команды завершена")
+	log.Println("[DEBUG] Обработка команды завершена")
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -86,6 +87,6 @@ func (h *Handler) handleCommand(userID, channelID, command string) {
 		commands.DeleteVote(h.client, h.conn, userID, channelID, args[1:])
 	default:
 		log.Printf("Неизвестная команда: %s", args[0])
-		commands.SendMessage(h.client, channelID, fmt.Sprintf("Неизвестная команда: %s", args[0]))
+		commands.SendMessage(h.client, channelID, fmt.Sprintf("Неизвестная команда: %s, используйте create, vote, results, end или delete", args[0]))
 	}
 }

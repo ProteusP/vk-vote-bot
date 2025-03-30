@@ -1,9 +1,7 @@
 package commands
 
 import (
-	"fmt"
 	"log"
-	"strings"
 	"vk-vote-bot/tarantooldb"
 
 	"github.com/mattermost/mattermost-server/v6/model"
@@ -17,7 +15,7 @@ func ShowResults(client *model.Client4, conn *tarantool.Connection, channelID st
 	}
 
 	voteID := args[0]
-	log.Print("[INFO] Айди из запроса:", voteID)
+	log.Printf("[DEBUG] Айди из запроса: %s", voteID)
 
 	resp, err := conn.Select("votes", "primary", 0, 1, tarantool.IterEq, []interface{}{voteID})
 
@@ -32,7 +30,7 @@ func ShowResults(client *model.Client4, conn *tarantool.Connection, channelID st
 
 	}
 
-	log.Printf("[INFO] Структура ответа: %v", resp.Data[0])
+	log.Printf("[DEBUG] Структура ответа: %v", resp.Data[0])
 
 	var vote tarantooldb.Vote
 	err = vote.LoadFromResponse(resp.Data)
@@ -41,16 +39,6 @@ func ShowResults(client *model.Client4, conn *tarantool.Connection, channelID st
 		sendError(client, channelID, "Ошибка сервера")
 		return
 	}
-	log.Printf("[INFO] Новое голосование: %v", vote)
 
-	var result strings.Builder
-	result.WriteString("📊 Результаты:\n")
-
-	for option := range vote.Options {
-		count := vote.Options[option]
-
-		result.WriteString(fmt.Sprintf("- %s: %d\n", option, count))
-	}
-
-	SendMessage(client, channelID, result.String())
+	SendMessage(client, channelID, vote.Results())
 }

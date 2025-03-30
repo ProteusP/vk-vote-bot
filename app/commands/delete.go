@@ -14,7 +14,7 @@ func DeleteVote(client *model.Client4, conn *tarantool.Connection, userID, chann
 	}
 
 	voteID := args[0]
-
+	log.Printf("[INFO] Удаление голосования %s", voteID)
 	_, err := conn.Delete("votes", "primary", []any{voteID})
 	if err != nil {
 		log.Printf("[ERROR] Ошибка удаления: %v", err)

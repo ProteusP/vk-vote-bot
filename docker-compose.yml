@@ -5,6 +5,8 @@ networks:
 services:
   tarantool:
     build: ./tarantool
+    volumes:
+      - tarantool_data:/var/lib/tarantool/data
     networks:
       - app-network
     ports:
@@ -27,3 +29,5 @@ services:
       - "8080:8080"
     env_file:
       - .env
+volumes:
+  tarantool_data:

@@ -39,5 +39,10 @@ func CreateVote(client *model.Client4, conn *tarantool.Connection, creator, chan
 		return
 	}
 
-	sendSuccess(client, channelID, fmt.Sprintf("✅ Голосование создано! ID: `%s`", ID))
+	keys := ""
+	for k := range options {
+		keys += fmt.Sprintf("'%s', ", k)
+	}
+	keys = strings.TrimSuffix(keys, ", ")
+	sendSuccess(client, channelID, fmt.Sprintf("✅ Голосование создано! ID: `%s`, варианты ответов: %s", ID, keys))
 }

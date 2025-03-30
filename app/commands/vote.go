@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"log"
 	"vk-vote-bot/tarantooldb"
 
@@ -27,19 +28,19 @@ func Vote(client *model.Client4, conn *tarantool.Connection, userID, channelID s
 		sendError(client, channelID, "Ошибка сервера")
 		return
 	}
-	if len(resp.Data) == 0 {
-		sendError(client, channelID, "Голосование не найдено")
-		return
-	}
 
 	var vote tarantooldb.Vote
 	vote.LoadFromResponse(resp.Data)
-
+	log.Printf("[DEBUG] Формат ответа: %v", vote)
 	if val, exists := vote.Options[option]; exists {
 		vote.Options[option] = val + 1
 	} else {
-		log.Printf("[ERROR Опция %s не существует в голосовании: %v", option, vote)
-		sendError(client, channelID, "Такой опции нет в этом голосовании!")
+		sendError(client, channelID, fmt.Sprintf("Опция '%s' не существует в этом голосовании!", option))
+		keys := make([]string, 0, len(vote.Options))
+		for k := range vote.Options {
+			keys = append(keys, k)
+		}
+		SendMessage(client, channelID, fmt.Sprintf("Доступные опции: %v", keys))
 		return
 	}
 
