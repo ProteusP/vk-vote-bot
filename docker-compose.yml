@@ -1,0 +1,29 @@
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  tarantool:
+    build: ./tarantool
+    networks:
+      - app-network
+    ports:
+      - "3301:3301"
+    env_file:
+      - .env
+    environment:
+      - TARANTOOL_USER_NAME=${DB_USER}
+      - TARANTOOL_USER_PASSWORD=${DB_PASSWORD}
+      - TT_CLI_USERNAME=${DB_USER}
+      - TT_CLI_PASSWORD=${DB_PASSWORD}
+
+  vk-vote-bot:
+    build: ./app
+    depends_on:
+      - tarantool
+    networks:
+      - app-network
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env

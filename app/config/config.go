@@ -6,6 +6,7 @@ type Config struct {
 	MattermostURL   string
 	MattermostToken string
 	TarantoolAddr   string
+	WebhookToken    string
 }
 
 func Load() *Config {
@@ -13,5 +14,6 @@ func Load() *Config {
 		MattermostURL:   os.Getenv("MATTERMOST_URL"),
 		MattermostToken: os.Getenv("MATTERMOST_TOKEN"),
 		TarantoolAddr:   os.Getenv("TARANTOOL_ADDR"),
+		WebhookToken:    os.Getenv("WEBHOOK_TOKEN"),
 	}
 }
