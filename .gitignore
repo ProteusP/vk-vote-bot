@@ -1,2 +1,3 @@
 tarantool_data
 *.log
+.env
