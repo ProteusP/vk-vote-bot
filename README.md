@@ -41,7 +41,7 @@ docker-compose up -d --build
        - `8080` — порт, указанный в `docker-compose.yml`
 3. Добавьте `vote` в поле **Trigger Words** и укажите `First word matches a trigger word exactly` в поле **Trigger When**.
 .
-4. Сохраните вебхук и скопируйте его токен для переменной `MATTERMOST_WEBHOOK_TOKEN` в файле `.env`
+4. Сохраните вебхук и скопируйте его токен для переменной `WEBHOOK_TOKEN` в файле `.env`
 
 ### 2. Настройка бота
 1. Перейдите: **Меню → Интеграции → Аккаунты ботов**
@@ -54,7 +54,7 @@ docker-compose up -d --build
 | Команда                                  | Пример                                      |
 |------------------------------------------|---------------------------------------------|
 | `vote create "Вопрос?" ["Варианты"]`    | `vote create "Лучший язык?" "Go" "Rust"` |
-| `vote [ID] [вариант]`                  | `vote 550e8400-e29b-41d4-a716-446655440000 Go` |
+| `vote vote [ID] [вариант]`              | `vote vote 550e8400-e29b-41d4-a716-446655440000 Go` |
 | `vote results [ID]`                    | `vote results 550e8400...`                |
 | `vote end [ID]`                        | `vote end 550e8400...`                    |
 | `vote delete [ID]`                     | `vote delete 550e8400...`                 |
@@ -64,7 +64,7 @@ docker-compose up -d --build
 |--------------------------|-----------------------------------|
 | `MATTERMOST_URL`         | Адрес Mattermost                  |
 | `MATTERMOST_BOT_TOKEN`   | Токен доступа бота Mattermost     |
-| `MATTERMOST_TOKEN`       | Токен входящего вебхука           |
+| `WEBHOOK_TOKEN`       | Токен входящего вебхука           |
 | `DB_USER`                | Пользователь Tarantool            |
 | `DB_PASSWORD`            | Пароль Tarantool                  |
 | `TARANTOOL_ADDR`         | Адрес Tarantool                   |
